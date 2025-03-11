@@ -1,34 +1,16 @@
-# Use the official Nginx base image
 FROM nginx:latest
 
-# Install necessary dependencies (git, etc.)
-RUN apt-get update && apt-get install -y \
-    git \
-    openssh-client \
-    && rm -rf /var/lib/apt/lists/*
+# Install Git to clone the repository
+RUN apt-get update && apt-get install -y git
 
-# Set the working directory inside the container
-WORKDIR /app
+# Remove the existing files in the Nginx HTML directory
+RUN rm -rf /usr/share/nginx/html/*
 
-# Add the SSH private key to the container (for GitHub authentication)
-# COPY your SSH private key (id_rsa) into the container (ensure it's available)
-# You will need to copy your SSH private key here for GitHub authentication
-COPY ./id_rsa /root/.ssh/id_rsa
+# Clone the repository into the Nginx HTML directory
+RUN git clone https://github.com/harjyot08/my-car.git /usr/share/nginx/html
 
-# Set correct permissions for the SSH key
-RUN chmod 600 /root/.ssh/id_rsa
-
-# Disable strict host checking (optional, for the sake of automation)
-RUN echo -e "Host github.com\n\tStrictHostKeyChecking no\n\n" > /root/.ssh/config
-
-# Clone the Git repository from GitHub
-RUN git https://github.com/harjyot08/my-car.git
-
-# Copy the cloned repository contents into Nginx's default directory
-RUN cp -r /app/my-car/* /usr/share/nginx/html/
-
-# Expose port 80 (default Nginx port)
+# Expose port 80 for the Nginx server
 EXPOSE 80
 
-# Set the default command to start Nginx
+# Command to run Nginx (it runs by default in the background)
 CMD ["nginx", "-g", "daemon off;"]
