@@ -22,7 +22,7 @@ RUN chmod 600 /root/.ssh/id_rsa
 RUN echo -e "Host github.com\n\tStrictHostKeyChecking no\n\n" > /root/.ssh/config
 
 # Clone the Git repository from GitHub
-RUN git clone git@github.com:harjyot08/my-car.git
+RUN git https://github.com/harjyot08/my-car.git
 
 # Copy the cloned repository contents into Nginx's default directory
 RUN cp -r /app/my-car/* /usr/share/nginx/html/
